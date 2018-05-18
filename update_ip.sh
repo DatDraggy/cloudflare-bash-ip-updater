@@ -13,17 +13,16 @@ log() {
     fi
 }
 
-log "test"
 recordA_ip=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name&type=A" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json"  | grep -Po '(?<="content":")[^"]*')
 recordAAAA_ip=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name&type=AAAA" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json"  | grep -Po '(?<="content":")[^"]*')
-#Stop wenn alles gleich
+#Stop when same
 if [[ $ip == $recordA_ip ]] && [[ $ipSix == $recordAAAA_ip ]]; then
     exit 0
 fi
 
 recordA_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name&type=A" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json"  | grep -Po '(?<="id":")[^"]*')
 recordAAAA_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name&type=AAAA" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json"  | grep -Po '(?<="id":")[^"]*')
-#Update wenn A anders
+#Update when A different
 if [[ $ip != $recordA_ip ]]; then
     update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"A\",\"name\":\"$record_name\",\"content\":\"$ip\"}")
     if [[ $update == *"\"success\":false"* ]]; then
@@ -34,10 +33,9 @@ if [[ $ip != $recordA_ip ]]; then
     else
         message="IPv4 changed to: $ip"
         log "$message"
-        echo "$message"
     fi
 fi
-#Update wenn AAAA anders
+#Update when AAAA different
 if [[ $ipSix != $recordAAAA_ip ]]; then
     updateSix=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordAAAA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"AAAA\",\"name\":\"$record_name\",\"content\":\"$ipSix\"}")
     if [[ $updateSix == *"\"success\":false"* ]]; then
@@ -48,6 +46,5 @@ if [[ $ipSix != $recordAAAA_ip ]]; then
     else
         message="IPv6 changed to: $ipSix"
         log "$message"
-        echo "$message"
     fi
 fi
