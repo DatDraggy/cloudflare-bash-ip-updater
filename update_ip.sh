@@ -24,7 +24,7 @@ recordA_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/
 recordAAAA_identifier=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records?name=$record_name&type=AAAA" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json"  | grep -Po '(?<="id": ")[^"]*')
 #Update when A different
 if [[ $ip != $recordA_ip ]]; then
-    update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"A\",\"name\":\"$record_name\",\"content\": \"$ip\"}")
+    update=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"A\",\"name\":\"$record_name\",\"content\":\"$ip\"}")
     if [[ $update == *"\"success\":false"* ]]; then
         message="API UPDATE FAILED. DUMPING RESULTS:\n$update"
         log "$message"
@@ -37,7 +37,7 @@ if [[ $ip != $recordA_ip ]]; then
 fi
 #Update when AAAA different
 if [[ $ipSix != $recordAAAA_ip ]]; then
-    updateSix=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordAAAA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"AAAA\",\"name\":\"$record_name\",\"content\": \"$ipSix\"}")
+    updateSix=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zone_identifier/dns_records/$recordAAAA_identifier" -H "X-Auth-Email: $auth_email" -H "X-Auth-Key: $auth_key" -H "Content-Type: application/json" --data "{\"id\":\"$zone_identifier\",\"type\":\"AAAA\",\"name\":\"$record_name\",\"content\":\"$ipSix\"}")
     if [[ $updateSix == *"\"success\":false"* ]]; then
         message="API UPDATE FAILED. DUMPING RESULTS:\n$update"
         log "$message"
