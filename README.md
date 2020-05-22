@@ -7,3 +7,6 @@ If you have a dynamic ip address, you can make cronjob execute this file every ~
 It then checks if the current address is the same as the one in cloudflare and updates them if they are not the same.
 
 If you have multiple domains pointing to the same server, you can simply set a "CNAME" record to the domain in `record_name`.
+
+### Requirements
+- Install JQ `sudo apt install jq`
